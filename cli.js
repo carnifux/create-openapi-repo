@@ -30,9 +30,10 @@ const OLD_REDOCLY_RC = 'redocly.yaml';
 const REDOCLY_YAML = '.redocly.yaml';
 
 async function ask(openapiRoot, docsRoot) {
+  console.log(argv);
   console.log('Welcome to the ' + chalk.green('OpenAPI-Repo') + ' generator!');
 
-  const { haveDefinition } = await prompt({
+  const { haveDefinition } = argv['f'] ? { haveDefinition: true } : await prompt({
     type: 'confirm',
     name: 'haveDefinition',
     message: 'Do you already have an OpenAPI/Swagger 3.0 definition for your API?',
@@ -41,7 +42,7 @@ async function ask(openapiRoot, docsRoot) {
 
   let definitionFileName;
   if (haveDefinition) {
-    definitionFileName = (
+    definitionFileName = argv['f'] ? argv['f'] : (
       await prompt({
         type: 'input',
         name: 'definitionFileName',
@@ -52,13 +53,12 @@ async function ask(openapiRoot, docsRoot) {
       })
     ).definitionFileName;
   }
-
   let openapi;
   if (haveDefinition) {
     openapi = yaml.safeLoad(fs.readFileSync(definitionFileName, 'utf8'));
   }
 
-  const { apiTitle } = await prompt({
+  const { apiTitle } = argv['n'] ? { apiTitle: argv['n'] } : await prompt({
     type: 'input',
     name: 'apiTitle',
     message: 'API Name:',
@@ -77,7 +77,7 @@ async function ask(openapiRoot, docsRoot) {
 
   let repo;
 
-  const { proceed } = await prompt({
+  const { proceed } = argv['y'] ? { proceed : true } : await prompt({
     type: 'confirm',
     name: 'proceed',
     message:
